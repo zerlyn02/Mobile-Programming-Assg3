@@ -1,145 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather</title>
+    <title>Weather Information</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
-            background-color: #f4f6f9;
-            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            font-family: 'Arial', sans-serif;
         }
-
         .container {
-            margin-top: 50px;
-        }
-
-        .weather-box {
-            background-color: #ffffff;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
             margin-top: 30px;
         }
-
-        .weather-info {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .weather-info img {
-            width: 80px;
-            margin-right: 20px;
-        }
-
-        h4 {
-            color: #333;
-            font-size: 24px;
-            font-weight: 600;
-        }
-
-        p {
-            color: #555;
-            font-size: 18px;
-            margin: 5px 0;
-        }
-
-        #weatherChart {
-            margin-top: 30px;
+        #weatherResult {
             background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
         }
-
-        .form-control,
-        .btn {
-            border-radius: 50px;
+        #weatherResult h4 {
+            color: #007bff;
         }
-
+        .form-label {
+            font-weight: bold;
+        }
         .btn-primary {
-            background: linear-gradient(45deg, lightcyan);
+            background-color: #007bff;
             border: none;
         }
-
         .btn-primary:hover {
-            background: linear-gradient(45deg, #0056b3, #007bff);
+            background-color: #0056b3;
         }
-
-        .form-label {
-            font-weight: 600;
-            color: #333;
+        .btn-reset {
+            background-color: red;
+            border: none;
         }
-
-        .weather-result {
-            background-color: #f1f4f9;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        .btn-reset:hover {
+            background-color: lightcoral;
         }
-
-        .error-message {
-            color: #ff4d4d;
-            font-size: 18px;
-            font-weight: 600;
-        }
-
-        .card {
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .card-header {
-            background-color: lightcyan;
-            color: white;
-            font-weight: bold;
-            border-radius: 10px 10px 0 0;
-        }
-
-        .image-container {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
+        #weatherGif {
+            width: 100%;
+            max-width: 300px;
             margin-bottom: 20px;
         }
-
-        .centered-image {
-            width: 35%;
-            max-width: 35%;
-            height: auto;
-            border-radius: 10px;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        .weather-icon {
+            width: 50px;
+            height: 50px;
+            vertical-align: middle;
         }
     </style>
 </head>
-
 <body>
-    <div class="container mt-5">
-        <div class="image-container">
-            <img src="images/weather.gif" alt="Weather Icon" class="centered-image">
-        </div>
+    <div class="container text-center">
+        <img id="weatherGif" src="images/weather.gif" alt="Weather Animation">
         <h2 class="text-center mb-4">Weather Information</h2>
-        <div class="card">
-            <div class="card-header">
-                <h4 class="text-center">Enter City to Get Weather Data</h4>
+        <form id="weatherForm" class="mt-4">
+            <div class="mb-3">
+                <label for="city" class="form-label">Enter City</label>
+                <input type="text" id="city" class="form-control" placeholder="e.g., London" required>
             </div>
-            <div class="card-body">
-                <form id="weatherForm" class="mt-4">
-                    <div class="mb-3">
-                        <label for="city" class="form-label">Search City Name</label>
-                        <input type="text" id="city" class="form-control" placeholder="e.g., London" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-lg w-100">Get Weather</button>
-                </form>
-            </div>
-        </div>
-
-        <div id="weatherResult" class="weather-result mt-4"></div>
-
-        <canvas id="weatherChart"></canvas>
+            <button type="submit" class="btn btn-primary">Get Weather</button>
+            <button type="button" id="resetButton" class="btn btn-reset">Reset</button>
+        </form>
+        <div id="weatherResult" class="mt-4"></div>
     </div>
 
     <script>
@@ -147,69 +73,38 @@
             e.preventDefault();
             const city = document.getElementById("city").value;
             const apiKey = "6cd6a70861da468f08217dacb3fd20a9";
-            const url = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`;
+            const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
 
             try {
-                // Fetching forecast data
                 const response = await axios.get(url);
                 const data = response.data;
 
-                // Extracting weather icon and details for current data
-                const weatherIcon = `http://openweathermap.org/img/wn/${data.list[0].weather[0].icon}.png`;
+                // Manually convert temperature from Kelvin to Celsius (though the API already returns Celsius)
+                const kelvinTemp = data.main.temp + 273.15;
+                const manualCelsius = kelvinTemp - 273.15;
+
+                // Get the icon code from the weather data
+                const weatherIcon = data.weather[0].icon;
+
+                // Construct the icon URL
+                const iconUrl = `http://openweathermap.org/img/wn/${weatherIcon}.png`;
 
                 document.getElementById("weatherResult").innerHTML = `
-                    <div class="weather-info">
-                        <img src="${weatherIcon}" alt="Weather Icon">
-                        <div>
-                            <h4>Weather in ${data.city.name}</h4>
-                            <p><strong>Temperature:</strong> ${data.list[0].main.temp}°C</p>
-                            <p><strong>Condition:</strong> ${data.list[0].weather[0].description}</p>
-                            <p><strong>Humidity:</strong> ${data.list[0].main.humidity}%</p>
-                        </div>
-                    </div>
+                    <h4>Weather in ${data.name}</h4>
+                    <p><strong>Temperature:</strong> ${manualCelsius.toFixed(2)}°C</p>
+                    <p><strong>Condition:</strong> <img class="weather-icon" src="${iconUrl}" alt="${data.weather[0].description}"> ${data.weather[0].description}</p>
+                    <p><strong>Humidity:</strong> ${data.main.humidity}%</p>
                 `;
-
-                // Prepare data for the line chart
-                const labels = data.list.slice(0, 8).map(forecast => {
-                    const date = new Date(forecast.dt * 1000);
-                    return date.toLocaleString(); // Formatting the timestamp into a readable date & time
-                });
-
-                const temperatures = data.list.slice(0, 8).map(forecast => forecast.main.temp);
-
-                // Create the line chart with the first 8 data points
-                new Chart(document.getElementById('weatherChart'), {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: `Temperature in ${data.city.name}`,
-                            data: temperatures,
-                            borderColor: '#FF6347',
-                            backgroundColor: 'rgba(255, 99, 71, 0.2)',
-                            fill: true,
-                            tension: 0.4
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            y: {
-                                beginAtZero: false,
-                                ticks: {
-                                    callback: function (value) { return value + "°C"; }
-                                }
-                            }
-                        }
-                    }
-                });
-
             } catch (error) {
-                document.getElementById("weatherResult").innerHTML = `
-                    <p class="error-message">Error fetching weather data. Please try again.</p>
-                `;
+                document.getElementById("weatherResult").innerHTML = `<p class="text-danger">Error fetching weather data. Please try again.</p>`;
             }
+        });
+
+        // Reset form and weather results
+        document.getElementById("resetButton").addEventListener("click", () => {
+            document.getElementById("weatherForm").reset();  // Clear the input field
+            document.getElementById("weatherResult").innerHTML = '';  // Clear the weather result
         });
     </script>
 </body>
-
 </html>
