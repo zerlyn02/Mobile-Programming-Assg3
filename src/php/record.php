@@ -2,15 +2,19 @@
 session_start();
 require 'db_connection.php';
 
-// Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     header('Content-Type: application/json');
     echo json_encode(['error' => 'Not logged in']);
     exit;
 }
 
-// Get records only for the current user
-$query = "SELECT * FROM user_log WHERE user_id = ? ORDER BY access_time DESC";
+// Modified query to include username from user table
+$query = "SELECT user_log.*, user.username 
+          FROM user_log 
+          JOIN user ON user_log.user_id = user.id 
+          WHERE user_log.user_id = ? 
+          ORDER BY access_time DESC";
+
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $_SESSION['user_id']);
 $stmt->execute();
