@@ -38,6 +38,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             if ($mail->send()) {
                 echo "A password reset link has been sent to your email. Please check your inbox.";
+                header('Location: /mobileprog/src/login.html');
+                exit();
             } else {
                 echo "Error sending email. Please try again.";
             }

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/weather.css">
+    <title>Player Profile</title>
+    
+</head>
+<body>
+    <div class="container text-center">
+        <h1>Player Profile</h1>
+        <div id="profile" class="profile">
+            <!-- Profile details will be dynamically loaded here -->
+        </div>
+        <a href="sport.html" class="btn btn-primary">Back to Rankings</a>
+    </div>
+
+    <script>
+        // Extract competitorId(s) from the query string
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        // Fetch and display the player's profile (single or mixed)
+        async function fetchPlayerProfile(competitorId1, competitorId2 = null) {
+            try {
+                // Updated to relative path pointing to profile.php in XAMPP
+                let apiUrl;
+                if (competitorId2) {
+                    // For mixed player
+                    apiUrl = `./profile.php?id1=${competitorId1}&id2=${competitorId2}`;
+                } else {
+                    // For single player
+                    apiUrl = `./profile.php?competitorId=${competitorId1}`;
+                }
+
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error("Failed to fetch profile data");
+                }
+
+                const data = await response.json();
+                displayProfile(data);
+            } catch (error) {
+                console.error(error);
+                document.getElementById("profile").innerHTML = `
+                    <p>Error loading profile data: ${error.message}</p>
+                `;
+            }
+        }
+
+        // Display the profile data in the HTML
+        function displayProfile(profileData) {
+            const profileContainer = document.getElementById("profile");
+
+            if (profileData && profileData.players) {
+                // For mixed players
+                const playerProfiles = profileData.players.map(player => `
+                    <div class="profile-item">
+                        <strong>Name:</strong> ${player.name} <br>
+                        <strong>Country:</strong> ${player.country} (${player.country_code}) <br>
+                        <strong>Abbreviation:</strong> ${player.abbreviation} <br>
+                        <strong>Date of Birth:</strong> ${player.date_of_birth} <br> <br>
+                    </div>
+                `).join('');
+                
+                profileContainer.innerHTML = `
+                    <h4>Mixed Player Profile</h4>
+                    ${playerProfiles}
+                `;
+            } else if (profileData && profileData.competitor) {
+                // For single player
+                const { name, country, country_code, abbreviation, date_of_birth } = profileData.competitor;
+                profileContainer.innerHTML = `
+                    <div class="profile-item"><strong>Name:</strong> ${name}</div>
+                    <div class="profile-item"><strong>Country:</strong> ${country} (${country_code})</div>
+                    <div class="profile-item"><strong>Abbreviation:</strong> ${abbreviation}</div>
+                    <div class="profile-item"><strong>Date of Birth:</strong> ${date_of_birth}</div>
+                    <div class="profile-item"><strong>Sport:</strong> ${profileData.sport.name}</div>
+                    <div class="profile-item"><strong>Category:</strong> ${profileData.category.name}</div> <br>
+                `;
+            } else {
+                profileContainer.innerHTML = "<p>No profile data found.</p>";
+            }
+        }
+
+        // Main function to initialize the page
+        function init() {
+            const competitorId1 = getQueryParam("id1");  // Fetching 'id1'
+            const competitorId2 = getQueryParam("id2");  // Fetching 'id2' for mixed player
+            const competitorId = getQueryParam("id");  // Fetching 'id' for single player
+
+            console.log(competitorId1, competitorId2, competitorId);  // Log IDs for debugging
+
+            if (competitorId) {
+                // For single player, use the single 'id' parameter
+                fetchPlayerProfile(competitorId);
+            } else if (competitorId1) {
+                // For mixed player, use 'id1' and 'id2' parameters
+                fetchPlayerProfile(competitorId1, competitorId2);
+            } else {
+                document.getElementById("profile").innerHTML = "<p>Invalid or missing competitor ID(s).</p>";
+            }
+        }
+
+        // Initialize on page load
+        init();
+
+
+    </script>
+    
+</body>
+</html>
