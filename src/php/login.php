@@ -18,6 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (password_verify($password, $user['password'])) {
             // Start a session if not started already
             session_start();
+            $_SESSION['user_id'] = $user['id']; // Add this line to store user ID
             $_SESSION['username'] = $user['username']; // Store username in session
             header("Location: ../index.html"); // Redirect to index.html
             exit(); // Ensure no further execution after redirection

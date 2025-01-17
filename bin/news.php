@@ -1,3 +1,65 @@
+<?php
+session_start(); // Add this at the very top
+require 'php/db_connection.php'; // Add database connection
+
+// Add logging function
+function logActivity($activity) {
+    global $conn;
+    if (isset($_SESSION['user_id'])) {
+        $stmt = $conn->prepare("INSERT INTO user_log (user_id, function_name) VALUES (?, ?)");
+        $stmt->bind_param("is", $_SESSION['user_id'], $activity);
+        $stmt->execute();
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['country'])) {
+    header('Content-Type: application/json');
+    $country = strtolower(trim($_GET['country']));
+    
+    // Log the news search activity
+    logActivity("Search News - Country: " . $country);
+
+    // Map country names to codes
+    $countryCodes = [
+        "china" => "cn",
+        "indonesia" => "id",
+        "japan" => "jp",
+        "malaysia" => "my",
+        "united kingdom" => "gb",
+        "united states of america" => "us",
+        "world" => "world"
+    ];
+
+    if (!array_key_exists($country, $countryCodes)) {
+        echo json_encode(['error' => 'Invalid country. Please select a valid country.']);
+        exit;
+    }
+
+    $apiKey = 'pub_65706fc5bcd42aa89bd5c273e280597c8d11d';
+    $baseUrl = 'https://newsdata.io/api/1/news';
+    $countryCode = $countryCodes[$country];
+
+    $url = "{$baseUrl}?apikey={$apiKey}&q={$country}&country={$countryCode}";
+
+    $response = file_get_contents($url);
+
+    if ($response === false) {
+        echo json_encode(['error' => 'Failed to fetch news from the API.']);
+        exit;
+    }
+
+    $data = json_decode($response, true);
+
+    if (!isset($data['results']) || empty($data['results'])) {
+        echo json_encode(['error' => 'No news found for this country.']);
+        exit;
+    }
+
+    echo json_encode(array_slice($data['results'], 0, 10));
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -106,7 +168,7 @@
         // Fetch News Function
         async function fetchNews(country) {
             try {
-                const response = await fetch(`php/news.php?country=${encodeURIComponent(country)}`);
+                const response = await fetch(`news.php?country=${encodeURIComponent(country)}`);
                 const data = await response.json();
                 console.log('Response:', data);
 
