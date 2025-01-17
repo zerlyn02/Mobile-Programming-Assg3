@@ -20,15 +20,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['country'])) {
     logActivity("Search News - Country: " . $country);
 
     // Map country names to codes
-    $countryCodes = [
-        "china" => "cn",
-        "indonesia" => "id",
-        "japan" => "jp",
-        "malaysia" => "my",
-        "united kingdom" => "gb",
-        "united states of america" => "us",
-        "world" => "world"
-    ];
+    const countryCodes = {
+            "China": "cn",
+            "Indonesia": "id",
+            "Japan": "jp",
+            "Malaysia": "my",
+            "United Kingdom": "gb",
+            "United States of America": "us",
+            "World": "world"
+        };
 
     if (!array_key_exists($country, $countryCodes)) {
         echo json_encode(['error' => 'Invalid country. Please select a valid country.']);
