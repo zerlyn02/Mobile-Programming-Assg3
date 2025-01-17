@@ -9,6 +9,7 @@
         body {
             background-color: #f0f8ff;
             font-family: 'Arial', sans-serif;
+            position: relative;
         }
         .container {
             max-width: 600px;
@@ -51,16 +52,33 @@
             height: 50px;
             vertical-align: middle;
         }
+        /* Back button style */
+        #backButton {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: none;
+            border: none;
+        }
+        #backButton img {
+            width: 30px;
+            height: 30px;
+        }
     </style>
 </head>
 <body>
+    <!-- Back Button -->
+    <button id="backButton" onclick="window.history.back()">
+        <img src="images/back.png" alt="Back">
+    </button>
+
     <div class="container text-center">
         <img id="weatherGif" src="images/weather.gif" alt="Weather Animation">
         <h2 class="text-center mb-4">Weather Information</h2>
         <form id="weatherForm" class="mt-4">
             <div class="mb-3">
                 <label for="city" class="form-label">Enter City</label>
-                <input type="text" id="city" class="form-control" placeholder="e.g., London" required>
+                <input type="text" id="city" class="form-control" placeholder="example: Sungai Petani" required>
             </div>
             <button type="submit" class="btn btn-primary">Get Weather</button>
             <button type="button" id="resetButton" class="btn btn-reset">Reset</button>
