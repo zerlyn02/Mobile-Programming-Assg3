@@ -78,8 +78,8 @@
                 <thead class="table-light">
                     <tr>
                         <th>#</th>
+                        <th>Log ID</th>
                         <th>User ID</th>
-                        <th>Username</th>
                         <th>Activity</th>
                         <th>Date/Time</th>
                     </tr>
@@ -148,7 +148,7 @@
             if (filteredLogs.length === 0) {
                 const row = tbody.insertRow();
                 const cell = row.insertCell(0);
-                cell.colSpan = 4; // Span across all columns
+                cell.colSpan = 5; // Update span to match new number of columns
                 cell.textContent = 'No records found';
                 cell.style.textAlign = 'center';
                 cell.style.padding = '20px';
@@ -168,8 +168,8 @@
                 // Calculate the actual record number
                 const recordNumber = startIndex + index + 1;
                 row.insertCell(0).textContent = recordNumber;
-                row.insertCell(1).textContent = log.user_id;
-                row.insertCell(2).textContent = log.username;
+                row.insertCell(1).textContent = log.log_id;         // Add log_id column
+                row.insertCell(2).textContent = log.user_id;
                 row.insertCell(3).textContent = log.function_name;
                 row.insertCell(4).textContent = new Date(log.access_time).toLocaleString();
             });
@@ -206,10 +206,10 @@
             const username = allLogs[0]?.username || 'user';
             const filename = `${username}_${activityFilter}_${dateFilter}_logs.csv`;
 
-            // Create CSV content with username column
-            let csv = '#,User ID,Username,Activity,Date/Time\n';
+            // Create CSV content with log_id column
+            let csv = '#,Log ID,User ID,Username,Activity,Date/Time\n';
             allLogs.forEach((log, index) => {
-                csv += `${index + 1},"${log.user_id}","${log.username}","${log.function_name}","${log.access_time}"\n`;
+                csv += `${index + 1},"${log.log_id}","${log.user_id}","${log.username}","${log.function_name}","${log.access_time}"\n`;
             });
 
             const blob = new Blob([csv], { type: 'text/csv' });
