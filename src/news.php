@@ -21,14 +21,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['country'])) {
 
     // Map country names to codes
     const countryCodes = {
-            "China": "cn",
-            "Indonesia": "id",
-            "Japan": "jp",
-            "Malaysia": "my",
-            "United Kingdom": "gb",
-            "United States of America": "us",
-            "World": "world"
-        };
+            "china": "cn",
+            "indonesia": "id",
+            "japan": "jp",
+            "malaysia": "my",
+            "united kingdom": "gb",
+            "united states of america": "us",
+            "world": "world"
+    };
+
 
     if (!array_key_exists($country, $countryCodes)) {
         echo json_encode(['error' => 'Invalid country. Please select a valid country.']);
