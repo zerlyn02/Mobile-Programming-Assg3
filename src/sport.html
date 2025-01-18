@@ -211,7 +211,7 @@
             // Log the profile view first
             const logUrl = playerId2 
                 ? `php/sport.php?id1=${playerId1}&id2=${playerId2}`
-                : `php/sport.php?id=${playerId1}`;
+                : `php/sport.php?id=${playerId1}&category=${currentRanking}`; // Add category parameter
 
             // Log the activity
             fetch(logUrl, {
