@@ -47,9 +47,10 @@ body {
             font-size: 1.3rem;
         }
         #weatherGif {
-            max-width: 100%;
+            max-width: 75%;
             height: auto;
             margin-bottom: 15px;
+            border-radius: 20px;
         }
         .weather-icon {
             width: 50px;
