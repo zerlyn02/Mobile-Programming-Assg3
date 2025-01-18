@@ -71,17 +71,7 @@ body {
         #backButton:hover {
             background-color: #0056b3;
         }
-        #rankingTable {
-            background-color: white; /* White background for the table */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Shadow effect behind the table */
-            border-radius: 8px; /* Optional: rounded corners for the table */
-            margin-top: 20px;
-            width: 100%;
-            table-layout: fixed; /* Prevents the table from stretching beyond its container */
-        }
-        
-        #rankingTable th, #rankingTable td {
-            text-align: center;
+         text-align: center;
             word-wrap: break-word;
             padding: 10px;
             overflow: hidden;
