@@ -55,9 +55,9 @@
                     <label class="filter-label">Filter by Activity</label>
                     <select id="filterActivity" class="form-select">
                         <option value="">All Activities</option>
-                        <option value="Search News">News Search</option>
+                        <option value="View Sport Profile">Sport Activities</option>
                         <option value="Search Weather">Weather Search</option>
-                        <option value="Search Sport">Sport Search</option>
+                        <option value="Search News">News Search</option>
                     </select>
                 </div>
                 <div class="col-md-4 filter-group">
@@ -131,7 +131,7 @@
             
             if (activityFilter) {
                 filteredLogs = filteredLogs.filter(log => 
-                    log.function_name.includes(activityFilter)
+                    log.function_name.toLowerCase().includes(activityFilter.toLowerCase())
                 );
             }
             

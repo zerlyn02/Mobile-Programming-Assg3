@@ -33,11 +33,3 @@ echo json_encode($records);
 $stmt->close();
 $conn->close();
 ?>
-
-<script>
-if (data.error) {
-    alert('Please login to view your records');
-    window.location.href = 'index.html';
-    return;
-}
-</script>
