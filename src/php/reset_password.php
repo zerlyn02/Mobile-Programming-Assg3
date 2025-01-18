@@ -85,6 +85,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['email']) && isset($_GET[
     $update_sql = "UPDATE user SET password='$hashed_password', reset_token=NULL, token_expires_at=NULL WHERE email='$email'";
     if ($conn->query($update_sql) === TRUE) {
         echo "Your password has been successfully reset.";
+        header("Location: /mobileprog/src/login.html");
+        exit();
     } else {
         echo "Error resetting password.";
     }

@@ -1,7 +1,6 @@
 <?php
 require 'db_connection.php';
 require __DIR__ . '/../../vendor/autoload.php'; // Include the Composer autoloader
-// require 'PHPMailer/PHPMailerAutoload.php'; // Include PHPMailer library
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
@@ -37,18 +36,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $mail->Body = "Hi,\n\nClick the link below to reset your password:\n$reset_link\n\nThis link will expire in 1 hour.";
 
             if ($mail->send()) {
-                echo "A password reset link has been sent to your email. Please check your inbox.";
-                header('Location: /mobileprog/src/login.html');
+                echo "Password reset email sent.";
+                header("Location: /mobileprog/src/login.html");
                 exit();
             } else {
-                echo "Error sending email. Please try again.";
+                echo "Failed to send password reset email.";
             }
         } else {
-            echo "Error saving reset token.";
+            echo "Failed to update reset token.";
         }
     } else {
-        echo "Email not found!";
+        echo "No user found with that email address.";
     }
-    $conn->close();
 }
 ?>
