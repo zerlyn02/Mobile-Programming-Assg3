@@ -1,3 +1,10 @@
+/* Universal Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
     background-color: #f0f8ff;
     font-family: 'Arial', sans-serif;
@@ -6,23 +13,24 @@ body {
     justify-content: center;
     align-items: center;
     margin: 0;
-    padding: 20px;
+    padding: 10px;
     position: relative;
 }
 
 .container {
     background-color: #fff;
-    padding: 20px;
+    padding: 15px;
     border-radius: 12px;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-    width: 100%;
-    max-width: 400px; /* Added to limit width for a better mobile experience */
+    width: 100%; /* Take full width by default */
+    max-width: 1000px; /* Limit width for web screens */
     box-sizing: border-box;
+    margin: 20px;
 }
 
 h2 {
-    font-size: 1.6rem;
-    margin-bottom: 20px;
+    font-size: 1.5rem;
+    margin-bottom: 15px;
     text-align: center;
 }
 
@@ -41,64 +49,32 @@ h2 {
     margin-bottom: 15px;
 }
 
-.btn-primary,
-.btn-danger {
+.btn-primary {
     font-size: 1rem;
     padding: 12px;
     width: 100%;
+    max-width: 200px;
     border: none;
     border-radius: 8px;
     cursor: pointer;
     margin-top: 15px;
-}
-
-.btn-primary {
     background-color: #007bff;
     color: white;
 }
 
-.btn-danger {
-    background-color: #dc3545;
-    color: white;
-}
-
-#weatherResult {
-    background-color: #f8f9fa;
-    border: 2px solid #ccc;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-top: 20px;
-    text-align: center;
-}
-
-#weatherResult h4 {
-    color: #007bff;
-    font-size: 1.3rem;
-    margin-bottom: 10px;
-}
-
-.weather-icon {
-    width: 50px;
-    height: 50px;
-    vertical-align: middle;
-}
-
-#weatherGif {
-    max-width: 100%;
-    height: auto;
-    margin-bottom: 15px;
+.btn-primary:hover {
+    background-color: #0056b3;
 }
 
 #backButton {
     position: absolute;
-    top: 20px;
-    left: 20px;
+    top: 10px;
+    left: 10px;
     background-color: #007bff;
     color: white;
     border: none;
     border-radius: 5px;
-    padding: 10px 15px;
+    padding: 8px 12px;
     cursor: pointer;
     font-size: 1rem;
 }
@@ -107,83 +83,169 @@ h2 {
     background-color: #0056b3;
 }
 
-/* Media Queries for Mobile View Adjustments */
+#rankingTable {
+    margin-top: 20px;
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 12px;
+}
+
+#rankingTable th, #rankingTable td {
+    text-align: center;
+    word-wrap: break-word;
+    padding: 10px;
+    font-size: 0.9rem;
+    border: 1px solid #ddd; 
+}
+
+#rankingTable th {
+    background-color: #007bff; 
+    color: white; 
+}
+
+#rankingTable tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+#rankingTable tr:hover {
+    background-color: #f1f1f1;
+}
+
+.search-bar {
+    margin: 15px 0;
+    text-align: center;
+}
+
+.search-bar input {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.view-profile-btn {
+    font-size: 0.9rem;
+    padding: 6px 10px;
+    background-color: #4dd9f5;
+    color: black;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.view-profile-btn:hover {
+    background-color: #0056b3;
+    color: white;
+}
+
+/* Media Query for Mobile Screens */
 @media (max-width: 768px) {
-    .container {
-        max-width: 100%;
-        padding: 15px;
-    }
-
     h2 {
-        font-size: 1.4rem;
-    }
-
-    .form-label {
-        font-size: 0.9rem;
-    }
-
-    .input-field {
-        font-size: 0.9rem;
-    }
-
-    .btn-primary, .btn-danger {
-        font-size: 0.9rem;
-        padding: 10px;
-    }
-
-    #weatherResult h4 {
         font-size: 1.2rem;
     }
 
-    .weather-icon {
-        width: 45px;
-        height: 45px;
+    .btn-primary {
+        width: 30%;
+        max-width: none;
+        font-size: 0.9rem;
     }
 
-    #backButton {
-        top: 15px;
-        left: 15px;
+    #rankingTable th, #rankingTable td {
+        font-size: 0.7rem;
+        padding: 8px;
+    }
+
+    .search-bar input {
         font-size: 0.9rem;
+        padding: 8px;
+    }
+
+    .view-profile-btn {
+        font-size: 0.6rem;
+        padding: 5px 8px;
     }
 }
 
-/* Small Screens (Below 480px) */
+/* Media Query for Very Small Screens */
 @media (max-width: 480px) {
-    .container {
-        max-width: 100%;
-        padding: 10px;
-    }
-
     h2 {
-        font-size: 1.2rem;
+        font-size: 1rem;
     }
 
-    .form-label {
-        font-size: 0.8rem;
-    }
-
-    .input-field {
+    .btn-primary {
         font-size: 0.8rem;
         padding: 10px;
     }
 
-    .btn-primary, .btn-danger {
-        font-size: 0.8rem;
-        padding: 10px;
+    #rankingTable th, #rankingTable td {
+        font-size: 0.6rem;
+        padding: 6px;
     }
 
-    #weatherResult h4 {
-        font-size: 1.1rem;
-    }
-
-    .weather-icon {
-        width: 40px;
-        height: 40px;
-    }
-
-    #backButton {
-        top: 10px;
-        left: 10px;
+    .search-bar input {
+        width: 100%;
+        padding: 6px;
         font-size: 0.8rem;
     }
 }
+
+/* Pagination Container */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    padding: 10px 0;
+    list-style: none;
+    gap: 8px; 
+}
+
+/* Pagination Buttons */
+.pagination button {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    background-color: #007bff; 
+    color: white; 
+    border: none;
+    border-radius: 5px; 
+    cursor: pointer; 
+    transition: background-color 0.3s ease, transform 0.2s ease; 
+}
+
+/* Hover Effect */
+.pagination button:hover {
+    background-color: #0056b3; 
+    transform: scale(1.05);
+}
+
+/* Active Button */
+.pagination button.active {
+    background-color: #4caf50; 
+    color: white; 
+    pointer-events: none; 
+}
+
+/* Disabled Button */
+.pagination button.disabled {
+    background-color: #ccc; 
+    color: #666; 
+    cursor: not-allowed; 
+    pointer-events: none; 
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .pagination button {
+        padding: 6px 10px; 
+        font-size: 0.6rem; 
+    }
+    .pagination {
+        gap: 5px;
+    }
+}
+
