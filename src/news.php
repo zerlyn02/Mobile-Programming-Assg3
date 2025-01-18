@@ -6,7 +6,7 @@ require 'php/db_connection.php'; // Add database connection
 function logActivity($activity) {
     global $conn;
     if (isset($_SESSION['user_id'])) {
-        $stmt = $conn->prepare("INSERT INTO user_log (user_id, function_name) VALUES (?, ?)");
+        $stmt = $conn->prepare("INSERT INTO user_log (user_id, function_name, access_time) VALUES (?, ?, NOW())");
         $stmt->bind_param("is", $_SESSION['user_id'], $activity);
         $stmt->execute();
     }

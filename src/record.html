@@ -171,7 +171,11 @@
                 row.insertCell(1).textContent = log.log_id;         // Add log_id column
                 row.insertCell(2).textContent = log.user_id;
                 row.insertCell(3).textContent = log.function_name;
-                row.insertCell(4).textContent = new Date(log.access_time).toLocaleString();
+                row.insertCell(4).textContent = new Date(log.access_time).toLocaleString('en-MY', {
+                    timeZone: 'Asia/Kuala_Lumpur',
+                    dateStyle: 'medium',
+                    timeStyle: 'medium'
+                });
             });
 
             // Update pagination
