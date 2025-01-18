@@ -48,7 +48,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     } elseif (isset($_GET['id'])) {
         // For single player
         $playerName = getPlayerName($_GET['id']);
-        logActivity("View Sport Profile - Player: $playerName");
+        $category = isset($_GET['category']) ? $_GET['category'] : 'Player';
+        
+        if ($category === 'men') {
+            logActivity("View Sport Profile - Male Player: $playerName");
+        } elseif ($category === 'women') {
+            logActivity("View Sport Profile - Female Player: $playerName");
+        } else {
+            logActivity("View Sport Profile - Player: $playerName");
+        }
     }
     
     header('Content-Type: application/json');
