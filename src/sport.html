@@ -83,10 +83,13 @@
             
             if (rankingType === 'men') {
                 document.getElementById("menButton").classList.add("active");
+                logActivity("Badminton men ranking displayed");
             } else if (rankingType === 'women') {
                 document.getElementById("womenButton").classList.add("active");
+                logActivity("Badminton women ranking displayed");
             } else if (rankingType === 'mixed') {
                 document.getElementById("mixedButton").classList.add("active");
+                logActivity("Badminton mixed pair ranking displayed");
             }
 
             fetchRankings();
@@ -214,6 +217,25 @@
             } else {
                 window.location.href = `profile.html?id=${playerId1}`;
             }
+        }
+
+        function logActivity(activity) {
+            fetch('sport.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ activity: activity })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Activity logged successfully');
+                } else {
+                    console.error('Failed to log activity');
+                }
+            })
+            .catch(error => console.error('Error:', error));
         }
 
         // Initial fetch of rankings
