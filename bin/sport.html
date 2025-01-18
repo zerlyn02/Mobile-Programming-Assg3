@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/sport.css">  <!-- Add this if not added already -->
+
+    <title>Badminton Player Rankings</title>
+</head>
+<body>
+    <button id="backButton" onclick="window.location.href='index.html'">Back</button>
+    <div class="container text-center">
+        <h2>Badminton Player Rankings</h2>
+        <div class="ranking-buttons mb-4">
+            <button id="menButton" class="btn btn-primary" onclick="selectRanking('men')">Men</button>
+            <button id="womenButton" class="btn btn-primary" onclick="selectRanking('women')">Women</button>
+            <button id="mixedButton" class="btn btn-primary" onclick="selectRanking('mixed')">Mixed</button>
+        </div>
+        <input type="text" id="searchInput" class="search-box form-control mb-4" placeholder="Search player by name..." oninput="filterRankings()" />
+        <table id="rankingTable" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Name</th>
+                    <th>Country</th>
+                    <th>Points</th>
+                    <th>Date of Birth</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data will be dynamically loaded here -->
+            </tbody>
+        </table>
+        <div class="pagination" id="pagination">
+            <!-- Pagination buttons will be dynamically created here -->
+        </div>
+    </div>
+
+    <script>
+        const apiUrl = "./sport.php";
+        const rowsPerPage = 10;
+        let currentPage = 1;
+        let rankingsData = [];
+        const maxVisiblePages = 3;
+        let filteredData = [];
+        let currentRanking = 'men';  // Default to 'men' ranking
+
+        async function fetchRankings() {
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error("Failed to fetch rankings");
+                }
+                const data = await response.json();
+                switch (currentRanking) {
+                    case 'men':
+                        rankingsData = data.rankings.find(r => r.name === "bwf_men_singles_world_ranking").competitor_rankings || [];
+                        break;
+                    case 'women':
+                        rankingsData = data.rankings.find(r => r.name === "bwf_women_singles_world_ranking").competitor_rankings || [];
+                        break;
+                    case 'mixed':
+                        rankingsData = data.rankings.find(r => r.name === "bwf_mixed_doubles_world_ranking").competitor_rankings || [];
+                        break;
+                }
+                filteredData = [...rankingsData]; // Copy the data initially
+                displayPage(currentPage);
+                createPaginationButtons();
+            } catch (error) {
+                console.error(error);
+                const tableBody = document.querySelector("#rankingTable tbody");
+                tableBody.innerHTML = `<tr><td colspan="6">Error loading data</td></tr>`;
+            }
+        }
+
+        function selectRanking(rankingType) {
+            currentRanking = rankingType;
+            document.getElementById("menButton").classList.remove("active");
+            document.getElementById("womenButton").classList.remove("active");
+            document.getElementById("mixedButton").classList.remove("active");
+            
+            if (rankingType === 'men') {
+                document.getElementById("menButton").classList.add("active");
+            } else if (rankingType === 'women') {
+                document.getElementById("womenButton").classList.add("active");
+            } else if (rankingType === 'mixed') {
+                document.getElementById("mixedButton").classList.add("active");
+            }
+
+            fetchRankings();
+        }
+
+        function filterRankings() {
+            const searchQuery = document.getElementById("searchInput").value.toLowerCase();
+            filteredData = rankingsData.filter(player => 
+                player.competitor.name.toLowerCase().includes(searchQuery)
+            );
+            currentPage = 1; // Reset to the first page
+            displayPage(currentPage);
+            createPaginationButtons();
+        }
+
+        function displayPage(page) {
+            const start = (page - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            const pageData = filteredData.slice(start, end);
+
+            const tableBody = document.querySelector("#rankingTable tbody");
+            tableBody.innerHTML = "";
+
+            if (pageData.length > 0) {
+                pageData.forEach(player => {
+                    let playerName = player.competitor.name;
+                    let country = player.competitor.country;
+                    let dateOfBirth = player.competitor.date_of_birth;
+
+                    if (currentRanking === 'mixed') {
+                        // For mixed pairs, display both players
+                        const player1 = player.competitor.players[0];
+                        const player2 = player.competitor.players[1];
+                        playerName = `${player1.name} / ${player2.name}`;
+                        country = `${player1.country} / ${player2.country}`;
+                        dateOfBirth = `${player1.date_of_birth} / ${player2.date_of_birth}`;
+
+                        const row = `
+                            <tr>
+                                <td>${player.rank}</td>
+                                <td>${playerName}</td>
+                                <td>${country}</td>
+                                <td>${player.points}</td>
+                                <td>${dateOfBirth}</td>
+                                <td>
+                                    <button class="view-profile-btn btn btn-info btn-sm" onclick="viewProfile('${player.competitor.players[0].id}', '${player.competitor.players[1].id}')">View Profile</button>
+                                </td>
+                            </tr>
+                        `;
+                        tableBody.insertAdjacentHTML('beforeend', row);
+                    } else {
+                        // For single player rankings (men/women)
+                        const row = `
+                            <tr>
+                                <td>${player.rank}</td>
+                                <td>${playerName}</td>
+                                <td>${country}</td>
+                                <td>${player.points}</td>
+                                <td>${dateOfBirth}</td>
+                                <td>
+                                    <button class="view-profile-btn" onclick="viewProfile('${player.competitor.id}')">View Profile</button>
+                                </td>
+                            </tr>
+                        `;
+                        tableBody.insertAdjacentHTML('beforeend', row);
+                    }
+                });
+            } else {
+                tableBody.innerHTML = `<tr><td colspan="6">No data available</td></tr>`;
+            }
+        }
+
+        function createPaginationButtons() {
+            const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+            const paginationDiv = document.getElementById("pagination");
+            paginationDiv.innerHTML = "";
+
+            const startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+            const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+            const prevButton = document.createElement("button");
+            prevButton.textContent = "<";
+            prevButton.disabled = currentPage === 1;
+            prevButton.classList.toggle("disabled", currentPage === 1);
+            prevButton.addEventListener("click", () => {
+                currentPage--;
+                displayPage(currentPage);
+                createPaginationButtons();
+            });
+            paginationDiv.appendChild(prevButton);
+
+            for (let i = startPage; i <= endPage; i++) {
+                const button = document.createElement("button");
+                button.textContent = i;
+                button.classList.toggle("active", i === currentPage);
+                button.addEventListener("click", () => {
+                    currentPage = i;
+                    displayPage(currentPage);
+                    createPaginationButtons();
+                });
+                paginationDiv.appendChild(button);
+            }
+
+            const nextButton = document.createElement("button");
+            nextButton.textContent = ">";
+            nextButton.disabled = currentPage === totalPages;
+            nextButton.classList.toggle("disabled", currentPage === totalPages);
+            nextButton.addEventListener("click", () => {
+                currentPage++;
+                displayPage(currentPage);
+                createPaginationButtons();
+            });
+            paginationDiv.appendChild(nextButton);
+        }
+
+        function viewProfile(playerId) {
+            // Redirect to profile page with the correct competitor ID (for single player)
+            window.location.href = `profile.html?id=${playerId}`;
+        }
+
+        function viewProfile(playerId1, playerId2) {
+            // Log the profile view first
+            const logUrl = playerId2 
+                ? `php/sport.php?id1=${playerId1}&id2=${playerId2}`
+                : `php/sport.php?id=${playerId1}&category=${currentRanking}`; // Add category parameter
+
+            // Log the activity
+            fetch(logUrl, {
+                credentials: 'same-origin'
+            })
+            .then(response => response.json())
+            .then(data => {
+                // After logging is successful, redirect to profile page
+                if (playerId2) {
+                    window.location.href = `profile.html?id1=${playerId1}&id2=${playerId2}`;
+                } else {
+                    window.location.href = `profile.html?id=${playerId1}`;
+                }
+            })
+            .catch(error => {
+                console.error('Error logging activity:', error);
+                // Continue to profile page even if logging fails
+                if (playerId2) {
+                    window.location.href = `profile.html?id1=${playerId1}&id2=${playerId2}`;
+                } else {
+                    window.location.href = `profile.html?id=${playerId1}`;
+                }
+            });
+        }
+
+        // Initial fetch of rankings
+        fetchRankings();
+    </script>
+</body>
+</html>

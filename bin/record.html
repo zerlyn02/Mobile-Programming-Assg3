@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity Logs</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .pagination {
+            margin-top: 20px;
+        }
+        #backButton {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+        /* Add these new styles for better spacing */
+        .filter-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .filter-label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .filter-group {
+            margin-bottom: 15px;
+        }
+        .export-section {
+            text-align: right;
+        }
+        @media (max-width: 768px) {
+            .filter-group {
+                margin-bottom: 20px;
+            }
+            .export-section {
+                text-align: center;
+                margin-top: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <button id="backButton" class="btn btn-primary" onclick="window.location.href='index.html'">Back</button>
+        <h2 class="text-center mb-4">User Activity Logs</h2>
+        
+        <div class="filter-section">
+            <div class="row">
+                <div class="col-md-4 filter-group">
+                    <label class="filter-label">Filter by Activity</label>
+                    <select id="filterActivity" class="form-select">
+                        <option value="">All Activities</option>
+                        <option value="Search News">News Search</option>
+                        <option value="Search Weather">Weather Search</option>
+                        <option value="Search Sport">Sport Search</option>
+                    </select>
+                </div>
+                <div class="col-md-4 filter-group">
+                    <label class="filter-label">Filter by Date</label>
+                    <input type="date" id="filterDate" class="form-control">
+                </div>
+                <div class="col-md-4 filter-group export-section">
+                    <label class="filter-label">Export Data</label>
+                    <button id="exportBtn" class="btn btn-success w-100">
+                        <i class="bi bi-download"></i> Export to CSV
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Log ID</th>
+                        <th>User ID</th>
+                        <th>Activity</th>
+                        <th>Date/Time</th>
+                    </tr>
+                </thead>
+                <tbody id="logsTableBody"></tbody>
+            </table>
+        </div>
+        
+        <nav>
+            <ul class="pagination" id="pagination"></ul>
+        </nav>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        const recordsPerPage = 15;
+        let allLogs = [];
+
+        // Fetch and display logs
+        function fetchLogs() {
+            fetch('php/record.php', {
+                credentials: 'same-origin' // Include cookies for session
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    // Handle unauthorized access
+                    alert('Please login to view your records');
+                    window.location.href = 'login.html';
+                    return;
+                }
+                allLogs = data;
+                displayLogs();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error fetching logs. Please try again.');
+            });
+        }
+
+        // Filter and display logs
+        function displayLogs() {
+            let filteredLogs = allLogs;
+            const tbody = document.getElementById('logsTableBody');
+            
+            // Apply filters
+            const activityFilter = document.getElementById('filterActivity').value;
+            const dateFilter = document.getElementById('filterDate').value;
+            
+            if (activityFilter) {
+                filteredLogs = filteredLogs.filter(log => 
+                    log.function_name.includes(activityFilter)
+                );
+            }
+            
+            if (dateFilter) {
+                filteredLogs = filteredLogs.filter(log => 
+                    log.access_time.startsWith(dateFilter)
+                );
+            }
+
+            // Clear previous content
+            tbody.innerHTML = '';
+
+            // Check if there are any records after filtering
+            if (filteredLogs.length === 0) {
+                const row = tbody.insertRow();
+                const cell = row.insertCell(0);
+                cell.colSpan = 5; // Update span to match new number of columns
+                cell.textContent = 'No records found';
+                cell.style.textAlign = 'center';
+                cell.style.padding = '20px';
+                
+                // Hide pagination when no records
+                document.getElementById('pagination').innerHTML = '';
+                return;
+            }
+
+            // Pagination
+            const startIndex = (currentPage - 1) * recordsPerPage;
+            const paginatedLogs = filteredLogs.slice(startIndex, startIndex + recordsPerPage);
+            
+            // Display logs
+            paginatedLogs.forEach((log, index) => {
+                const row = tbody.insertRow();
+                // Calculate the actual record number
+                const recordNumber = startIndex + index + 1;
+                row.insertCell(0).textContent = recordNumber;
+                row.insertCell(1).textContent = log.log_id;         // Add log_id column
+                row.insertCell(2).textContent = log.user_id;
+                row.insertCell(3).textContent = log.function_name;
+                row.insertCell(4).textContent = new Date(log.access_time).toLocaleString('en-MY', {
+                    timeZone: 'Asia/Kuala_Lumpur',
+                    dateStyle: 'medium',
+                    timeStyle: 'medium'
+                });
+            });
+
+            // Update pagination
+            updatePagination(filteredLogs.length);
+        }
+
+        // Update pagination controls
+        function updatePagination(totalRecords) {
+            const totalPages = Math.ceil(totalRecords / recordsPerPage);
+            const pagination = document.getElementById('pagination');
+            pagination.innerHTML = '';
+
+            for (let i = 1; i <= totalPages; i++) {
+                const li = document.createElement('li');
+                li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+                li.onclick = () => {
+                    currentPage = i;
+                    displayLogs();
+                };
+                pagination.appendChild(li);
+            }
+        }
+
+        // Export to CSV
+        document.getElementById('exportBtn').onclick = () => {
+            // Get filter values for filename
+            const activityFilter = document.getElementById('filterActivity').value || 'all';
+            const dateFilter = document.getElementById('filterDate').value || 'all-dates';
+            
+            // Create filename using username and filters
+            const username = allLogs[0]?.username || 'user';
+            const filename = `${username}_${activityFilter}_${dateFilter}_logs.csv`;
+
+            // Create CSV content with log_id column
+            let csv = '#,Log ID,User ID,Username,Activity,Date/Time\n';
+            allLogs.forEach((log, index) => {
+                csv += `${index + 1},"${log.log_id}","${log.user_id}","${log.username}","${log.function_name}","${log.access_time}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+        };
+
+        // Add event listeners for filters
+        document.getElementById('filterActivity').onchange = displayLogs;
+        document.getElementById('filterDate').onchange = displayLogs;
+
+        // Initial load
+        fetchLogs();
+    </script>
+</body>
+</html>

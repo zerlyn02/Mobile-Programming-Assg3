@@ -1,0 +1,79 @@
+body {
+            background-color: #f0f8ff;
+            font-family: 'Arial', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+            position: relative;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 100%;
+            overflow-x: auto;
+        }
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+        .form-label {
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        .btn-primary {
+            font-size: 1rem;
+            padding: 10px 15px;
+        }
+        .btn-danger {
+            font-size: 1rem;
+            padding: 10px 15px;
+        }
+        #weatherResult {
+            background-color: #f8f9fa;
+            border: 2px solid #ccc;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 15px;
+        }
+        #weatherResult h4 {
+            color: #007bff;
+            font-size: 1.3rem;
+        }
+        #weatherGif {
+            max-width: 75%;
+            height: auto;
+            margin-bottom: 15px;
+            border-radius: 20px;
+        }
+        .weather-icon {
+            width: 50px;
+            height: 50px;
+            vertical-align: middle;
+        }
+        #backButton {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        #backButton:hover {
+            background-color: #0056b3;
+        }
+         text-align: center;
+            word-wrap: break-word;
+            padding: 10px;
+            overflow: hidden;
+        }
