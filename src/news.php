@@ -142,7 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['country'])) {
 
         // Back to Main Page Button
         document.getElementById('mainPageButton').addEventListener('click', () => {
-            location.href = 'index.html'; // Redirects to index.html
+            location.href = 'mainPage.html'; // Redirects to index.html
         });
 
         // Info Button (Show Available Countries and System Info)

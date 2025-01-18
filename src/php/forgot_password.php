@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($update_stmt->execute()) {
             echo "<script>
                     alert('Password successfully reset!');
-                    window.location.href = '../login.html';
+                    window.location.href = '../index.html'; // No change needed as it points to login
                   </script>";
         } else {
             echo "<script>

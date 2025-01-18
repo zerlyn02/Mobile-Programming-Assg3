@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Execute the statement and check for success
     if ($stmt->execute()) {
         echo "Registration successful";  // Check if execution works
-        header("Location: ../login.html");
+        header("Location: ../index.html");
         exit();
     } else {
         echo "Error: " . $stmt->error;  // Provide error message if any issue

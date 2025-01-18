@@ -1,6 +1,14 @@
 <?php
 require 'db_connection.php';
 
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../index.html");
+    exit();
+}
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = $_POST['username'];
     $password = $_POST['password'];
@@ -20,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             session_start();
             $_SESSION['user_id'] = $user['id']; // Add this line to store user ID
             $_SESSION['username'] = $user['username']; // Store username in session
-            header("Location: ../index.html"); // Redirect to index.html
+            header("Location: ../mainPage.html"); // Instead of ../index.html
             exit(); // Ensure no further execution after redirection
         } else {
             echo "Invalid password!";
