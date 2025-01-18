@@ -208,12 +208,33 @@
         }
 
         function viewProfile(playerId1, playerId2) {
-            // Check if playerId2 exists, otherwise show the profile of only playerId1
-            if (playerId2) {
-                window.location.href = `profile.html?id1=${playerId1}&id2=${playerId2}`;
-            } else {
-                window.location.href = `profile.html?id=${playerId1}`;
-            }
+            // Log the profile view first
+            const logUrl = playerId2 
+                ? `php/sport.php?id1=${playerId1}&id2=${playerId2}`
+                : `php/sport.php?id=${playerId1}`;
+
+            // Log the activity
+            fetch(logUrl, {
+                credentials: 'same-origin'
+            })
+            .then(response => response.json())
+            .then(data => {
+                // After logging is successful, redirect to profile page
+                if (playerId2) {
+                    window.location.href = `profile.html?id1=${playerId1}&id2=${playerId2}`;
+                } else {
+                    window.location.href = `profile.html?id=${playerId1}`;
+                }
+            })
+            .catch(error => {
+                console.error('Error logging activity:', error);
+                // Continue to profile page even if logging fails
+                if (playerId2) {
+                    window.location.href = `profile.html?id1=${playerId1}&id2=${playerId2}`;
+                } else {
+                    window.location.href = `profile.html?id=${playerId1}`;
+                }
+            });
         }
 
         // Initial fetch of rankings
